@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+	h1{
+		width: 300px;
+		margin: 50px auto;
+	}
+    #reg{
+        width: 300px;
+        height:500px;
+        box-shadow: 2px 2px 5px gray;
+        margin: 10px auto;
+        padding-top:40px;
+        box-sizing: border-box;
+    }
+    #reg input{
+        display: block;
+        width: 90%;
+        margin: 20px auto;
+        padding: 5px;
+        box-sizing: border-box;
+        outline: none;
+    }
+    #reg button{
+        background-color: forestgreen;
+        border-width: 0;
+        font-size: 24px;
+        color:white;
+        width:90%;
+        margin: 0 auto;
+        padding: 5px;
+        box-sizing: border-box;
+        outline: none;
+        display: block;
+    }
+</style>
+
+</head>
+<body>
+	<h1>注册</h1>
+	<form id="reg" action="UserAction?action=regist" method="post">
+		<input id="name" type="text" placeholder="please input your name" name="name"><br/>
+		<input id="password" type="password" placeholder="please input your password" name="password"><br/>
+		<input id="email" type="text" placeholder="please input your email" name="email"><br/>
+		<input id="phone" type="phone" placeholder="please input your phone" name="phone"><br/>
+		<button type="submit">注册</button>
+	</form>
+	
+	<script>
+	
+		// 获取表单数据
+		var nameinp = document.querySelector("#name");
+		var passwordinp = document.querySelector("#password");
+		var emailinp = document.querySelector("#email");
+		var phoneinp = document.querySelector("#phone");
+		var btn = document.querySelector("button");
+	
+		// 检验name
+		function checkname(name){
+			var re = /^\w(\w{1,11})$/gi;
+			return re.test(name);
+		}
+		
+		// 检验password
+		function checkpassword(password){
+			var re = /^[\w\W]([\w\W]{5,15})$/gi;
+			return re.test(password);
+		}
+		
+		// 检验email
+		function checkemail(email){
+			var re = /^\w+@(\w+)(\.\w+)+$/gi;
+			return re.test(email);
+		}
+		
+		// 检验phone
+		function checkphone(phone){
+			var re = /^1(\d{10})$/gi;
+			return re.test(parseInt(phone));
+		}
+		
+		var nameFlag = false;
+		var pwdFlag = false;
+		var emailFlag = false;
+		var phoneFlag = true;
+		
+		var mm = "";    //用于判断是否重名，默认不重名
+		// 失去焦点判断
+		nameinp.onblur = function(){
+			if(nameinp.value!=""){
+				var result = checkname(nameinp.value);
+				if(!result){
+					clearTip();
+					var span = document.createElement("span");
+					span.style.color = "red";
+					span.innerText = "用户名不正确";
+					document.forms[0].insertBefore(span,document.querySelector("#name"));
+				} else{
+					clearTip();
+					// 判断用户名重名
+					var flag = "true";	//用于判断是否重名，默认不重名
+					var xhr = new XMLHttpRequest();
+					xhr.onreadystatechange = function(){
+						if(xhr.readyState == 4 && xhr.status == 200){
+							flag = xhr.responseText;
+							mm = xhr.responseText;
+						}
+					}
+					
+					xhr.open("get","UserAction?action=checkname&name="+nameinp.value,false);
+					xhr.send();
+					
+					if(mm == "false"){
+						var span = document.createElement("span");
+						span.style.color = "red";
+						span.innerText = "用户名已存在!";
+						document.forms[0].insertBefore(span,document.querySelector("#name"));
+						
+					} else{
+						clearTip();
+						nameFlag = true;
+					}
+				}
+			} else{
+				nameFlag = false;
+			}
+			
+		}
+		
+		passwordinp.onblur = function(){
+			if(passwordinp.value!=""){
+				var result = checkpassword(passwordinp.value);
+				if(!result){
+					clearTip();
+					var span = document.createElement("span");
+					span.style.color = "red";
+					span.innerText = "密码不正确";
+					document.forms[0].insertBefore(span,document.querySelector("#password"));
+					pwdFlag = false;
+					
+				} else{
+					clearTip();
+					pwdFlag = true;
+				}
+			} else{
+				pwdFlag = false;
+			}
+		}
+		
+		var ss = "true";	//用于判断是否重名，默认不重名
+		emailinp.onblur = function(){
+			if(emailinp.value!=""){
+				var result = checkemail(emailinp.value);
+				if(!result){
+					clearTip();
+					var span = document.createElement("span");
+					span.style.color = "red";
+					span.innerText = "邮箱不正确";
+					document.forms[0].insertBefore(span,document.querySelector("#email"));
+					emailFlag = false;
+					
+				} else{
+					clearTip();
+					
+					// 判断邮箱是否已被使用
+					var flag = "true";	//用于判断是否重名，默认不重名
+					var xhr = new XMLHttpRequest();
+					xhr.onreadystatechange = function(){
+						if(xhr.readyState == 4 && xhr.status == 200){
+							flag = xhr.responseText;
+							ss = xhr.responseText;
+						}
+					}
+					
+					xhr.open("get","UserAction?action=checkemail&email="+emailinp.value,false);
+					xhr.send();
+					
+					if(ss=="false"){
+						var span = document.createElement("span");
+						span.style.color = "red";
+						span.innerText = "邮箱已存在!";
+						document.forms[0].insertBefore(span,document.querySelector("#email"));
+						emailFlag = false;
+					} else{
+						clearTip();
+						emailFlag = true;
+					}
+				}
+			} else{
+				emailFlag = false;
+			}
+		}
+		
+		phoneinp.onblur = function(){
+			if(phoneinp.value!=""){
+				var result = checkphone(phoneinp.value);
+				if(!result){
+					clearTip();
+					var span = document.createElement("span");
+					span.style.color = "red";
+					span.innerText = "电话不正确";
+					document.forms[0].insertBefore(span,document.querySelector("#phone"));
+					phoneFlag = false;
+				} else{
+					clearTip();
+					phoneFlag = true;
+				}
+			}
+		}
+		
+		// 提交时事件(name,password,email不能为空)
+		btn.onclick = function(event){
+			if(nameinp.value!="" && passwordinp.value!="" && emailinp.value!=""){
+				if(nameFlag && pwdFlag && emailFlag && phoneFlag){
+					document.forms[0].submit();
+				} else{
+					clearTip();
+					var span = document.createElement("span");
+					span.style.color = "red";
+					span.innerText = "有尚未完善的信息！";
+					document.forms[0].insertBefore(span,document.querySelector("button"));
+					event.preventDefault();
+				}
+				
+			} else{
+				clearTip();
+				var span = document.createElement("span");
+				span.style.color = "red";
+				span.innerText = "*号为必填项";
+				document.forms[0].insertBefore(span,document.querySelector("button"));
+				event.preventDefault();
+			}
+		}
+		
+		
+		//清除原有提示符
+		function clearTip(){
+			var span = document.querySelector("span");
+			if(span!=null){
+				document.forms[0].removeChild(span);
+			}
+		}
+		
+		
+
+		
+		
+	</script>
+</body>
+</html>

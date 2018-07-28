@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+	h1{
+		width: 300px;
+		margin: 50px auto;
+	}
+    #reg{
+        width: 300px;
+        height:360px;
+        box-shadow: 2px 2px 5px gray;
+        margin: 10px auto;
+        padding-top:40px;
+        box-sizing: border-box;
+    }
+    #reg input{
+        display: block;
+        width: 90%;
+        margin: 10px auto;
+        padding: 5px;
+        box-sizing: border-box;
+        outline: none;
+    }
+    #reg button{
+        background-color: forestgreen;
+        border-width: 0;
+        font-size: 24px;
+        color:white;
+        width:90%;
+        margin: 10px auto;
+        padding: 5px;
+        box-sizing: border-box;
+        outline: none;
+        display: block;
+    }
+</style>
+</head>
+<body>
+	<h1>登录</h1>
+	<form id="reg" action="UserAction?action=login" method="post">
+		<input type="text" placeholder="please input your name" name="name"><br/>
+		<input type="password" placeholder="please input your password" name="password"><br/>
+		<button type="submit">登录</button>
+		<button>注销</button>
+	</form>
+
+</body>
+</html>
